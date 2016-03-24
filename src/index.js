@@ -5,6 +5,7 @@ const Snoowrap = require('snoowrap');
 const emoji = require('node-emoji');
 const CleverBot = require('cleverbot.io');
 const chrono = require('chrono-node')
+const mathjs = require('mathjs');
 
 const bot = new DiscordClient({
     autorun: true,
@@ -61,6 +62,14 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
   else console.log('['+userID+']', user, 'PM:', message);
   if (userID == bot.id) return;
   if (pm) parsePM(user, userID, channelID, message, rawEvent);
+
+  var math = null;
+  try {
+    math = mathjs.eval(message, {});
+  } catch (e) {
+
+  }
+
   if (message == '!hey') {
     chat(channelID, 'Hey there, <@'+userID+'>!');
   } else if (message == '!info') {
@@ -115,7 +124,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
       }
     }
-
+  } else if (math) {
+    chat(channelID, '<@'+userID+'>: '+math);
   }
 
   /*var date = chrono.parseDate(message);
