@@ -65,7 +65,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 
   var math = null;
   try {
-    math = mathjs.eval(message, {});
+    math = mathjs.eval(message.replace('!showerror ', ''), {});
   } catch (e) {
 
   }
@@ -124,7 +124,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
       }
     }
-  } else if (math && math != message) {
+  } else if ((math || message.indexOf('!showerror') == 0) && math != message) {
     chat(channelID, '<@'+userID+'>: '+math);
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
