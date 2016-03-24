@@ -1,0 +1,14 @@
+{
+  "discord": {
+    "email": "",
+    "password": "",
+    "server": "132349439506382848"
+  },
+
+  "reddit": {
+    "id": "",
+    "secret": "",
+    "refresh_token": "",
+    "user_agent": "TF2DiscordBot v1.0.0 by /u/demipixel"
+  }  
+}
