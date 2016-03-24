@@ -64,10 +64,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
   if (pm) parsePM(user, userID, channelID, message, rawEvent);
 
   var math = null;
+  var mathError = null;
   try {
     math = mathjs.eval(message.replace('!showerror ', ''), {});
   } catch (e) {
-
+    mathError = e;
   }
 
   if (message == '!hey') {
@@ -125,11 +126,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
       }
     }
   } else if ((math || message.indexOf('!showerror') == 0) && math != message) {
-    chat(channelID, '<@'+userID+'>: '+math);
+    chat(channelID, '<@'+userID+'>: '+(math != null ? math : mathError));
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
   } else if (message == '!tf2bot') {
-    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression`');
+    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !showerror <math expr>`');
   }
 
   /*var date = chrono.parseDate(message);
