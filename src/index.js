@@ -91,7 +91,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, 'Stop fucking saying "lmao"');
   } else if (message.match(/^!main .+/)) {
     var sel = message.match(/!main (.+)/)[1];
-    var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy'];
+    var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy', 'civilian'];
     var chosenClass = classList.reduce((s, curr, ind) => {
       return sel.toLowerCase().indexOf(curr) == '0' ? ind : s;
     }, null);
