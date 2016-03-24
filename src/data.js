@@ -35,12 +35,14 @@ module.exports = function(file, cb) {
   }
 
   function user(str) {
-    return data[str];
+    if (!data.users[str]) data.users[str] = {};
+    return data.users[str];
   }
 
   return {
     global: data.global,
     users: data.users,
+    user: user,
     save: saveData
   }
 }

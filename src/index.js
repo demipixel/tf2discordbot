@@ -89,6 +89,33 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, 'MED DOWN EVERYBODY PUSH GOD DAMNIT');
   } else if (!!~message.toLowerCase().indexOf('lmao') && user == 'DemiPixel') {
     chat(channelID, 'Stop fucking saying "lmao"');
+  } else if (message.match(/^!main .+/)) {
+    var sel = message.match(/!main (.+)/)[1];
+    var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy'];
+    var chosenClass = classList.reduce((s, curr, ind) => {
+      return sel.toLowerCase().indexOf(curr) == '0' ? ind : s;
+    }, null);
+    if (chosenClass == null) {
+      var id = idFromName(sel);
+      if (id == null) {
+        chat(channelID, 'Couldn\'t find '+sel.replace(/[@<>/g]/g, '')+'!');
+      } else {
+        var theirClass = localData.user(id).classMain;
+        if (theirClass === undefined) chat(channelID, '<@'+id+'> has not set a main!');
+        else chat(channelID, '<@'+id+'> mains '+classList[theirClass]);
+      }
+    } else {
+      if (chosenClass == 0) {
+        delete localData.user(userID).classMain;
+        localData.save();
+        chat(channelID, '<@'+userID+'> is no longer maining any class!');
+      } else {
+        localData.user(userID).classMain = chosenClass;
+        localData.save();
+        chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
+      }
+    }
+
   }
 
   /*var date = chrono.parseDate(message);
