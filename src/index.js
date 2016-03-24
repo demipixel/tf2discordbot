@@ -91,11 +91,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, 'Stop fucking saying "lmao"');
   }
 
-  var date = chrono.parseDate(message);
+  /*var date = chrono.parseDate(message);
   if (date) {
     var m = moment(date);
     var str = '<@'+userID+'>: '+m.tz('America/Los_Angeles').calendar()+' PST, '
-  }
+  }*/
 });
 
 var sayRandomPost = async (channelID) => {
