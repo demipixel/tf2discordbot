@@ -126,6 +126,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     }
   } else if (math) {
     chat(channelID, '<@'+userID+'>: '+math);
+  } else if (message == '!git') {
+    chat(channelID, 'https://github.com/demipixel/tf2discordbot');
   }
 
   /*var date = chrono.parseDate(message);
