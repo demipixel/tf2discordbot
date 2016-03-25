@@ -99,8 +99,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, 'MED DOWN EVERYBODY PUSH GOD DAMNIT');
   } else if (!!~message.toLowerCase().indexOf('lmao') && user == 'DemiPixel') {
     chat(channelID, 'Stop fucking saying "lmao"');
-  } else if (message.match(/^!main .+/)) {
-    var sel = message.match(/!main (.+)/)[1];
+  } else if (message.indexOf('!main ') == 0 || message == '!main') {
+    var sel = message.trim() == '!main' ? userID : message.match(/!main (.+)/)[1];
     var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy', 'civilian'];
     var chosenClass = classList.reduce((s, curr, ind) => {
       return sel.toLowerCase().indexOf(curr) == '0' ? ind : s;
