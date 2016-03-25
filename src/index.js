@@ -42,6 +42,11 @@ const idFromName = (name) => {
     return mainServer.members[id].user.username.toLowerCase() == name || id == name ? id : chosen;
   }, null);
 }
+const channelFromName = (name) => {
+  return Object.keys(mainServer.channels).reduce((chosen, id) => {
+    return mainServer.channels[id].name == name ? id : chosen;
+  }, null);
+}
 const chooseRandom = (arr) => {
   return arr[Math.floor(Math.random()*arr.length)];
 }
@@ -93,7 +98,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     sayRandomPost(channelID).catch(e=>{throw e;});
   } else if (!!~message.indexOf(bot.id)) {
     if (user == 'DemiPixel') chat(channelID, chooseRandom(['Talking about me, bby?', 'I\'m here, ya know :wink:', 'Hey <@'+userID+'> :heart:', 'Me? :wink:']));
-  } else if (message.match(/!chat .+/)) {
+  } else if (message.match(/^!chat .+/)) {
     sayCleverBot(message.match(/!chat (.+)/)[1], channelID);
   } else if (!!~message.toLowerCase().indexOf('med down')) {
     chat(channelID, 'MED DOWN EVERYBODY PUSH GOD DAMNIT');
@@ -153,6 +158,19 @@ var sayCleverBot = (str, channelID) => {
   });
 }
 
-function ParsePM(user, userID, channelID, message, rawEvent) {
-
+function parsePM(user, userID, channelID, message, rawEvent) {
+  if (userID != DEMIPIXEL_ID) return;
+  if (message.indexOf('say ') == 0) {
+    var match = message.match(/say ([^ ]+) (.+)/);
+    if (!match) {
+      chat(userID, 'Format: `say <channel> <message>`');
+      return;
+    }
+    var channel = channelFromName(match[1]);
+    if (!channel) {
+      chat(userID, 'That is not a valid channel!');
+      return;
+    }
+    chat(channel, match[2]);
+  }
 }
