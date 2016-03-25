@@ -99,7 +99,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
   } else if (!!~message.indexOf(bot.id)) {
     if (user == 'DemiPixel') chat(channelID, chooseRandom(['Talking about me, bby?', 'I\'m here, ya know :wink:', 'Hey <@'+userID+'> :heart:', 'Me? :wink:']));
   } else if (message.match(/^!chat .+/)) {
-    sayCleverBot(message.match(/!chat (.+)/)[1], channelID);
+    sayCleverBot(message.match(/!chat (.+)/)[1], userID, channelID);
   } else if (!!~message.toLowerCase().indexOf('med down')) {
     chat(channelID, 'MED DOWN EVERYBODY PUSH GOD DAMNIT');
   } else if (!!~message.toLowerCase().indexOf('lmao') && user == 'DemiPixel') {
@@ -152,10 +152,10 @@ var sayRandomPost = async (channelID) => {
   chat(channelID, link);
 }
 
-var sayCleverBot = (str, channelID) => {
+var sayCleverBot = (str, userID, channelID) => {
   clever.ask(str, (err, resp) => {
     if (err) console.log(err);
-    else chat(channelID, resp.replace(/\*/g, '\\*'));
+    else chat(channelID, '<@'+userID+'>, 'resp.replace(/\*/g, '\\*'));
   });
 }
 
