@@ -131,7 +131,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
       }
     }
   } else if ((math || message.indexOf('!showerror') == 0) && math != message.replace(/"/g, '')) {
-    chat(channelID, '<@'+userID+'>: '+(math != null ? math : mathError));
+    var show = message.indexOf('!showerror') == 0;
+    sayMath(userID, math, show ? mathError : null, channelID, show);
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
   } else if (message == '!tf2bot') {
@@ -156,6 +157,23 @@ var sayCleverBot = (str, channelID) => {
     if (err) console.log(err);
     else chat(channelID, resp.replace(/\*/g, '\\*'));
   });
+}
+
+var sayMath = (userID, math, mathError, channelID, showFuncs) => {
+  if (mathError) {
+    chat(channelID, '<@'+userID+'>: '+mathError);
+    return;
+  }
+  if (typeof math == 'object') {
+    math = math.entries;
+    var output = math.reduce((str, m) => {
+      if (typeof m != 'function' || showFuncs) return m + '\n';
+    },'');
+    output = output.trim();
+    if (output) chat(channelID, '<@'+userID+'>\n'+output);
+  } else {
+    chat(channelID, '<@'+userID+'>: '+math);
+  }
 }
 
 function parsePM(user, userID, channelID, message, rawEvent) {
