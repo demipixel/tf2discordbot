@@ -155,7 +155,7 @@ var sayRandomPost = async (channelID) => {
 var sayCleverBot = (str, userID, channelID) => {
   clever.ask(str, (err, resp) => {
     if (err) console.log(err);
-    else chat(channelID, '<@'+userID+'>, 'resp.replace(/\*/g, '\\*'));
+    else chat(channelID, '<@'+userID+'>, '+resp.replace(/\*/g, '\\*'));
   });
 }
 
