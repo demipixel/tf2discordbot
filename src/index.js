@@ -125,7 +125,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
       }
     }
-  } else if ((math || message.indexOf('!showerror') == 0) && math != message) {
+  } else if ((math || message.indexOf('!showerror') == 0) && math != message.replace(/"/g, '')) {
     chat(channelID, '<@'+userID+'>: '+(math != null ? math : mathError));
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
