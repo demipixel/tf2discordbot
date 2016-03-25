@@ -37,9 +37,9 @@ const chat = (id, message, noEmoji) => {
   });
 };
 const idFromName = (name) => {
-  name = name.replace(/[@<>]/g, '');
+  name = name.replace(/[@<>]/g, '').toLowerCase();
   return Object.keys(mainServer.members).reduce((chosen, id) => {
-    return mainServer.members[id].user.username == name || id == name ? id : chosen;
+    return mainServer.members[id].user.username.toLowerCase() == name || id == name ? id : chosen;
   }, null);
 }
 const chooseRandom = (arr) => {
