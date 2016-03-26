@@ -190,8 +190,8 @@ var sayMath = (userID, str, math, mathError, channelID, debug) => {
       if (typeof m != 'function' || debug) return str + m.toString() + '\n';
       else return str;
     }, '');
-    output = output.trim();
-    if (output) chat(channelID, '<@'+userID+'>\n'+output);
+    var arr = output.split('\n');
+    if (output) chat(channelID, '<@'+userID+'>\n'+arr.slice(0, 5).join('\n')+(arr.length > 5 ? '\n...' : ''));
   } else if (typeof math != 'function' || debug) {
     chat(channelID, '<@'+userID+'>: '+math);
   }
