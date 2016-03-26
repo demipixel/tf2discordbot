@@ -51,6 +51,8 @@ const chooseRandom = (arr) => {
   return arr[Math.floor(Math.random()*arr.length)];
 }
 const DEMIPIXEL_ID = '125696820901838849';
+const DEMI_SEND = ['lmao', 'stfu', 'kid', 'fucking bot', 'FUCK'];
+const DEMI_RESPOND = ['Stop fucking saying "lmao"', 'no you', 'bitch', 'dumbass human', 'YOURSELF'];
 
 bot.on('ready', function() {
     console.log(bot.username + ' [' + bot.id + '] has started up!');
@@ -102,8 +104,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     sayCleverBot(message.match(/!chat (.+)/)[1], userID, channelID);
   } else if (!!~message.toLowerCase().indexOf('med down')) {
     chat(channelID, 'MED DOWN EVERYBODY PUSH GOD DAMNIT');
-  } else if (!!~message.toLowerCase().indexOf('lmao') && user == 'DemiPixel') {
-    chat(channelID, 'Stop fucking saying "lmao"');
+  } else if (!!~DEMI_SEND.indexOf(message.toLowerCase()) && user == 'DemiPixel') {
+    chat(channelID, DEMI_RESPOND[DEMI_SEND.indexOf(message.toLowerCase())]);
   } else if (message.indexOf('!main ') == 0 || message == '!main') {
     var sel = message.trim() == '!main' ? userID : message.match(/!main (.+)/)[1];
     var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy', 'civilian'];
@@ -130,12 +132,12 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
       }
     }
-  } else if ((math !== null || message.indexOf('!debug') == 0) && math != message.replace(/"/g, '')) {
+  } else if ((math !== null || message.indexOf('!debug') == 0) && math.toString() != message.replace(/"/g, '')) {
     var show = message.indexOf('!debug') == 0;
-    sayMath(userID, math, show ? mathError : null, channelID, show);
+    sayMath(userID, message, math, show ? mathError : null, channelID, show);
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
-  } else if (message == '!tf2bot') {
+  } else if (message == '!help') {
     chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !debug <math expr>`');
   }
 
@@ -159,20 +161,21 @@ var sayCleverBot = (str, userID, channelID) => {
   });
 }
 
-var sayMath = (userID, math, mathError, channelID, showFuncs) => {
+var sayMath = (userID, str, math, mathError, channelID, debug) => {
   if (mathError) {
     chat(channelID, '<@'+userID+'>: '+mathError);
     return;
   } else if (math == null) return;
+  else if (str == 'e' && !debug) return;
   if (math.entries) {
     math = math.entries;
     var output = math.reduce((str, m) => {
-      if (typeof m != 'function' || showFuncs) return str + m.toString() + '\n';
+      if (typeof m != 'function' || debug) return str + m.toString() + '\n';
       else return str;
     }, '');
     output = output.trim();
     if (output) chat(channelID, '<@'+userID+'>\n'+output);
-  } else if (typeof math != 'function' || showFuncs) {
+  } else if (typeof math != 'function' || debug) {
     chat(channelID, '<@'+userID+'>: '+math);
   }
 }
