@@ -130,7 +130,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
       }
     }
-  } else if ((math || message.indexOf('!debug') == 0) && math != message.replace(/"/g, '')) {
+  } else if ((math !== null || message.indexOf('!debug') == 0) && math != message.replace(/"/g, '')) {
     var show = message.indexOf('!debug') == 0;
     sayMath(userID, math, show ? mathError : null, channelID, show);
   } else if (message == '!git') {
