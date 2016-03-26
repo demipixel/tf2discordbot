@@ -71,7 +71,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
   var math = null;
   var mathError = null;
   try {
-    math = mathjs.eval(message.replace('!showerror ', ''), {});
+    math = mathjs.eval(message.replace('!debug ', '').trim(), {});
   } catch (e) {
     mathError = e;
   }
@@ -130,13 +130,13 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         chat(channelID, '<@'+userID+'> is now a '+sel+' main!');
       }
     }
-  } else if ((math || message.indexOf('!showerror') == 0) && math != message.replace(/"/g, '')) {
-    var show = message.indexOf('!showerror') == 0;
+  } else if ((math || message.indexOf('!debug') == 0) && math != message.replace(/"/g, '')) {
+    var show = message.indexOf('!debug') == 0;
     sayMath(userID, math, show ? mathError : null, channelID, show);
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
   } else if (message == '!tf2bot') {
-    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !showerror <math expr>`');
+    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !debug <math expr>`');
   }
 
   /*var date = chrono.parseDate(message);
@@ -164,14 +164,15 @@ var sayMath = (userID, math, mathError, channelID, showFuncs) => {
     chat(channelID, '<@'+userID+'>: '+mathError);
     return;
   } else if (math == null) return;
-  if (typeof math == 'object') {
+  if (math.entries) {
     math = math.entries;
     var output = math.reduce((str, m) => {
-      if (typeof m != 'function' || showFuncs) return ((m && m.toString && m.toString()) || '') + '\n';
-    },'');
+      if (typeof m != 'function' || showFuncs) return str + m.toString() + '\n';
+      else return str;
+    }, '');
     output = output.trim();
     if (output) chat(channelID, '<@'+userID+'>\n'+output);
-  } else {
+  } else if (typeof math != 'function' || showFuncs) {
     chat(channelID, '<@'+userID+'>: '+math);
   }
 }
