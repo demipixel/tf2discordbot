@@ -139,6 +139,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !debug <math expr>`');
   } else if (message.match(/((scout|soli|sold|pyro|demo|heavy|engi|med|sniper|spy)[^ ]{0,15}) down/i)) {
     var match = message.match(/((scout|soli|sold|pyro|demo|heavy|engi|med|sniper|spy)[^ ]{0,15}) down/i);
+    match[2] = match[2].toLowerCase();
     if (match[2] == 'sold') match[2] = 'soli';
     var str = ({
       scout: 'My dream is to be in a highlander match and for the enemy mumble to say "Watch out for the scout".',
