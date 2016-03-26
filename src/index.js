@@ -167,7 +167,7 @@ var sayMath = (userID, math, mathError, channelID, showFuncs) => {
   if (typeof math == 'object') {
     math = math.entries;
     var output = math.reduce((str, m) => {
-      if (typeof m != 'function' || showFuncs) return m + '\n';
+      if (typeof m != 'function' || showFuncs) return ((m && m.toString && m.toString()) || '') + '\n';
     },'');
     output = output.trim();
     if (output) chat(channelID, '<@'+userID+'>\n'+output);
