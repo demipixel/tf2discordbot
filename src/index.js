@@ -102,13 +102,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     if (user == 'DemiPixel') chat(channelID, chooseRandom(['Talking about me, bby?', 'I\'m here, ya know :wink:', 'Hey <@'+userID+'> :heart:', 'Me? :wink:']));
   } else if (message.match(/^!chat .+/)) {
     sayCleverBot(message.match(/!chat (.+)/)[1], userID, channelID);
-  } else if (!!~message.toLowerCase().indexOf('med down')) {
-    chat(channelID, 'MED DOWN EVERYBODY PUSH GOD DAMNIT');
   } else if (!!~DEMI_SEND.indexOf(message.toLowerCase()) && user == 'DemiPixel') {
     chat(channelID, DEMI_RESPOND[DEMI_SEND.indexOf(message.toLowerCase())]);
   } else if (message.indexOf('!main ') == 0 || message == '!main') {
     var sel = message.trim() == '!main' ? userID : message.match(/!main (.+)/)[1];
-    var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy', 'civilian'];
+    var classList = ['none', 'scout', 'soldier', 'pyro', 'demo', 'heavy', 'engi', 'med', 'sniper', 'spy', 'civilian', 'dispenser', 'tele', 'sentry'];
     var chosenClass = classList.reduce((s, curr, ind) => {
       return sel.toLowerCase().indexOf(curr) == '0' ? ind : s;
     }, null);
@@ -139,6 +137,21 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
   } else if (message == '!help') {
     chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !debug <math expr>`');
+  } else if (message.match(/((scout|soli|sold|pyro|demo|heavy|engi|med|sniper|spy)[^ ]{0,15}) down/i)) {
+    var match = message.match(/((scout|soli|sold|pyro|demo|heavy|engi|med|sniper|spy)[^ ]{0,15}) down/i);
+    if (match[1] == 'sold') match[1] = 'soli';
+    var str = ({
+      scout: 'My dream is to be in a highlander match and for the enemy mumble to say "Watch out for the scout".',
+      soli: 'SON OF A CUSSING CUSS WORD',
+      pyro: 'BAD CLASS DOWN',
+      demo: '%CLASS% TAKES SKILL',
+      heavy: '%CLASS% DOWN, GET THE MED!!!!',
+      engi: 'DISPENSER DOWN EVERYBODY PUSH',
+      med: '%CLASS% DOWN EVERYBODY PUSH GOD DAMNIT',
+      sniper: 'ONLY '+(Math.floor(Math.random()*10)+2)+' %CLASS%S LEFT',
+      spy: 'No one gives a fuck.'
+    })[match[2]];
+    chat(channelID, str.replace('%CLASS%', match[1].toUpperCase()));
   }
 
   /*var date = chrono.parseDate(message);
@@ -156,7 +169,10 @@ var sayRandomPost = async (channelID) => {
 
 var sayCleverBot = (str, userID, channelID) => {
   clever.ask(str, (err, resp) => {
-    if (err) console.log(err);
+    if (err) {
+      console.log(err);
+      chat(channelID, '<@'+userID+'>, I don\'t know how to respond...');
+    }
     else chat(channelID, '<@'+userID+'>, '+resp.replace(/\*/g, '\\*'));
   });
 }
