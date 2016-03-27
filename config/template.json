@@ -10,5 +10,9 @@
     "secret": "",
     "refresh_token": "",
     "user_agent": "TF2DiscordBot v1.0.0 by /u/demipixel"
-  }  
+  },
+
+  "steam": {
+    "key": ""
+  }
 }
