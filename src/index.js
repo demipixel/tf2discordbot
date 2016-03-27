@@ -6,6 +6,7 @@ const emoji = require('node-emoji');
 const CleverBot = require('cleverbot.io');
 const chrono = require('chrono-node')
 const mathjs = require('mathjs');
+const sw = require('./steamweb')(config.get('steam.key'));
 
 const bot = new DiscordClient({
     autorun: true,
@@ -136,7 +137,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/tf2discordbot');
   } else if (message == '!help') {
-    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !debug <math expr>`');
+    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, !random, !chat <message>, med down, !main <user>, !main <class>, any math expression, !debug <math expr>, !steam <user or profile link>, !join <user>`');
   } else if (message.match(/((scout|soli|sold|pyro|demo|heavy|engi|med|sniper|spy)[^ ]{0,15}) down/i)) {
     var match = message.match(/((scout|soli|sold|pyro|demo|heavy|engi|med|sniper|spy)[^ ]{0,15}) down/i);
     match[2] = match[2].toLowerCase();
@@ -153,6 +154,64 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
       spy: 'No one gives a fuck.'
     })[match[2]];
     chat(channelID, str.replace('%CLASS%', match[1].toUpperCase()));
+  } else if (message.match(/^!steam/i)) {
+    var url = message.match(/^!steam (.+)/i);
+    url = url != null ? url[1] : '';
+    var info = url != '' ? checkValidSteamUrl(url) : null;
+    if (info == null) {
+      var user = idFromName(url || userID);
+      if (user) {
+        if (localData.user(user).steamid) chat(channelID, '<@'+userID+'>: http://steamcommunity.com/profiles/'+localData.user(user).steamid+'/');
+        else chat(channelID, '<@'+userID+'>, ' + (user != userID ? '<@'+user+'> has' : 'you have') + ' not associated a steam url with '+(user != userID ? 'their' : 'your') + ' account!' + (user == userID ? 'Set it with !steam <url>' : ''));
+      } else {
+        chat(channelID, '<@'+userID+'>, that is not a valid steam profile URL or user!');
+      }
+    } else {
+      var checkID = (id) => {
+        sw.summary(id, (err, output) => {
+          if (err) chat(channelID, '<@'+userID+'>, could not validate the URL at this time.');
+          else {
+            if (output.players[0]) {
+              localData.user(userID).steamid = output.players[0].steamid;
+              localData.save();
+              chat(channelID, '<@'+userID+'>, successfully set your steam profile!');
+            } else {
+              chat(channelID, '<@'+userID+'>, that is not a valid URL!');
+            }
+          }
+        });
+      }
+      if (info.type == 'id') checkID(info.id);
+      else {
+        sw.vanity(info.id, (err, output) => {
+          if (err) chat(channelID, '<@'+userID+'>, could not validate the URL at this time.');
+          else if (output.message == 'No match') chat(channelID, '<@'+userID+'>, that is not a valid URL!');
+          else if (output.steamid) checkID(output.steamid);
+          else chat(channelID, '<@'+userID+'>, could not validate the URL at this time.');
+        });
+      }
+    }
+  } else if (message.match(/^!join .+/i)) {
+    var user = idFromName(message.match(/^!join (.+)/i)[1]);
+    var refer = user == userID ? 'you' : '<@'+user+'>';
+    var tense = refer == 'you' ? ' have' : ' has';
+    if (!user) chat(channelID, '<@'+userID+', could not find that user!');
+    else if (!localData.user(user).steamid) chat(channelID, '<@'+userID+'>, '+refer+tense+' not associated their steam profile with their discord account!');
+    else {
+      sw.summary(localData.user(user).steamid, (err, output) => {
+        if (err) {
+          chat(channelID, '<@'+userID+'>, there was an error getting ' + (refer=='you'?'your':refer+'\'s') + ' connect info!');
+          return;
+        }
+        var player = output.players[0];
+        if (!player) chat(channelID, '<@'+userID+'>, '+refer+tense+' an invalid URL associated with '+(refer=='you'?'your':'their')+' discord account!');
+        else {
+          if (player.gameserverip) chat(channelID, '<@'+userID+'>, '+refer+' '+(refer=='you'?'are':'is')+' playing '+player.gameextrainfo+': steam://connect/'+player.gameserverip);
+          else if (player.gameextrainfo) chat(channelID, '<@'+userID+'>, '+refer+' '+(refer=='you'?'are':'is')+' playing '+player.gameextrainfo+' but I can\'t get connect info.');
+          else chat(channelID, '<@'+userID+'>, '+refer+' '+(refer=='you'?'are':'is')+' not playing any game or '+(refer=='you'?'your':'their')+' profile is private!');
+        }
+      });
+    }
   }
 
   /*var date = chrono.parseDate(message);
@@ -195,6 +254,20 @@ var sayMath = (userID, str, math, mathError, channelID, debug) => {
   } else if (typeof math != 'function' || debug) {
     chat(channelID, '<@'+userID+'>: '+math);
   }
+}
+
+function checkValidSteamUrl(str) {
+  var vanityMatch = str.match(/http:\/\/steamcommunity\.com\/id\/([^ \/]+)/);
+  if (vanityMatch) return {
+    type: 'vanity',
+    id: vanityMatch[1]
+  }
+  var idMatch = str.match(/http:\/\/steamcommunity\.com\/profiles\/([^ \/]+)/);
+  if (idMatch) return {
+    type: 'id',
+    id: idMatch[1]
+  }
+  return null;
 }
 
 function parsePM(user, userID, channelID, message, rawEvent) {
