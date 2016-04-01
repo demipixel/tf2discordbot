@@ -257,12 +257,12 @@ var sayMath = (userID, str, math, mathError, channelID, debug) => {
 }
 
 function checkValidSteamUrl(str) {
-  var vanityMatch = str.match(/http:\/\/steamcommunity\.com\/id\/([^ \/]+)/);
+  var vanityMatch = str.match(/https?:\/\/steamcommunity\.com\/id\/([^ \/]+)/);
   if (vanityMatch) return {
     type: 'vanity',
     id: vanityMatch[1]
   }
-  var idMatch = str.match(/http:\/\/steamcommunity\.com\/profiles\/([^ \/]+)/);
+  var idMatch = str.match(/https?:\/\/steamcommunity\.com\/profiles\/([^ \/]+)/);
   if (idMatch) return {
     type: 'id',
     id: idMatch[1]
