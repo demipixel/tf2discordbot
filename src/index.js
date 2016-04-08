@@ -114,7 +114,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     if (chosenClass == null) {
       var id = idFromName(sel);
       if (id == null) {
-        chat(channelID, 'Couldn\'t find '+sel.replace(/[@<>/g]/g, '')+'!');
+        chat(channelID, 'Couldn\'t find '+sel.replace(/[@<>]/g, '')+'!');
       } else {
         var theirClass = localData.user(id).classMain;
         if (theirClass === undefined) chat(channelID, '<@'+id+'> has not set a main!');
