@@ -281,6 +281,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
           degrees(firstId, out.steamid || type, (match) => {
             if (!match) {
               chat(channelID, 'Could not find any separation in less than four degrees. (If one of the source users has a private profile, this is instead three)');
+              return;
             }
             var str = '<@'+userID+'>, there is '+match.length+' degrees of separation!'+(match.length?' Here are the users:\n':'');
             str += match.map(i => 'http://steamcommunity.com/profiles/'+i+'/').join('\n');
