@@ -4,7 +4,10 @@ const sw = require('./steamweb')(config.get('steam.key'));
 module.exports = getDegree;
 
 function getDegree(id1, id2, cb, friends1, friends2, tracker1, tracker2, count) {
-  if (count == 4) cb(null);
+  if (count == 4) {
+    cb(null);
+    return;
+  }
   if (!friends1) {
     friends1 = {};
     friends2 = {};
