@@ -7,6 +7,7 @@ const CleverBot = require('cleverbot.io');
 const chrono = require('chrono-node')
 const mathjs = require('mathjs');
 const sw = require('./steamweb')(config.get('steam.key'));
+const degrees = require('./degrees');
 
 const bot = new DiscordClient({
     autorun: true,
@@ -183,7 +184,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
       }
       if (info.type == 'id') checkID(info.id);
       else {
-        sw.vanity(info.id, (err, output) => {
+        sw.id(info.id, (err, output) => {
           if (err) chat(channelID, '<@'+userID+'>, could not validate the URL at this time.');
           else if (output.message == 'No match') chat(channelID, '<@'+userID+'>, that is not a valid URL!');
           else if (output.steamid) checkID(output.steamid);
@@ -212,6 +213,85 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         }
       });
     }
+  } else if (message.match(/^!degree/)) {
+    var match = message.match(/^!degrees? ([^ ]+) ([^ ]+)/);
+    if (!match) {
+      chat(channelID, 'Usage: !degrees <profile/id/vanity> <profile/id/vanity>')
+      return;
+    }
+    
+    var info1 = checkValidSteamUrl(match[1]) || (match[1].length == 17 && match[1].indexOf('765') == 0 ? { type: 'id', id: match[1]} : { type: 'vanity', id: match[1] });
+    var info2 = checkValidSteamUrl(match[2]) || (match[2].length == 17 && match[2].indexOf('765') == 0 ? { type: 'id', id: match[2]} : { type: 'vanity', id: match[2] });
+
+    if (info1.type == 'vanity' && info1.id.indexOf('<@') != -1) {
+      var user = idFromName(info1.id);
+      if (!user) {
+        chat(channelID, 'Cannot find '+info1.id+'!');
+        return;
+      } else if (!localData.user(user).steamid) {
+        chat(channelID, info1.id+' has not set their steam profile! Set it using !steam <profile>');
+        return;
+      } else {
+        info1.id = localData.user(user).steamid;
+        info1.type = 'id';
+      }
+    }
+
+    if (info2.type == 'vanity' && info2.id.indexOf('<@') != -1) {
+      var user = idFromName(info2.id);
+      if (!user) {
+        chat(channelID, 'Cannot find '+info2.id+'!');
+        return;
+      } else if (!localData.user(user).steamid) {
+        chat(channelID, info2.id+' has not set their steam profile! Set it using !steam <profile>');
+        return;
+      } else {
+        info2.id = localData.user(user).steamid;
+        info2.type = 'id';
+      }
+    }
+
+    var firstSuccess = false;
+    var check = (info) => {
+      if (info.type == 'vanity') sw.vanity(info.id, (err, out) => done('vanity', err, out));
+      else sw.summary(info.id, (err, out) => done(info.id, err, out));
+    }
+    var firstSuccess = true;
+    var firstDone = false;
+    var firstId = null;
+    var done = (type, err, out) => {
+      if (firstDone && !firstSuccess) return;
+      var pos = firstDone ? 'second' : 'first';
+      if (!firstDone) firstDone = true;
+      if (err) {
+        chat(channelID, '<@'+userID+'>, I got an error trying to process the '+pos+' user!');
+        firstSuccess = false;
+      } else if (type != 'vanity' && !out.players[0]) {
+        chat(channelID, '<@'+userID+'>, I could not find the '+pos+' user!');
+        firstSuccess = false;
+      } else if (type == 'vanity' && out.message == 'No match') {
+        chat(channelID, '<@'+userID+'>, I could not find the '+pos+' user!');
+        firstSuccess = false;
+      } else if (type == 'vanity' && !out.steamid) {
+        chat(channelID, '<@'+userID+'>, I got an error trying to process the '+pos+' user!');
+        firstSuccess = false;
+      } else {
+        if (firstId) {
+          chat(channelID, '<@'+userID+'>, processing the degrees of separation between these two users. This could take up to a few minutes!');
+          degrees(firstId, out.steamid || type, (match) => {
+            if (!match) {
+              chat(channelID, 'Could not find any separation in less than six degrees. (If one of the source users has a private profile, this is instead three)');
+            }
+            var str = '<@'+userID+'>, there is '+match.length+' degrees of separation!'+(match.length?' Here are the users:\n':'');
+            str += match.map(i => 'http://steamcommunity.com/profiles/'+i+'/').join('\n');
+            chat(channelID, str);
+          });
+        } else firstId = out.steamid || type;
+      }
+    };
+
+    check(info1);
+    check(info2);
   }
 
   /*var date = chrono.parseDate(message);
