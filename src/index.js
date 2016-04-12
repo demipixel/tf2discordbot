@@ -280,7 +280,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
           chat(channelID, '<@'+userID+'>, processing the degrees of separation between these two users. This could take up to a few minutes!');
           degrees(firstId, out.steamid || type, (match) => {
             if (!match) {
-              chat(channelID, 'Could not find any separation in less than six degrees. (If one of the source users has a private profile, this is instead three)');
+              chat(channelID, 'Could not find any separation in less than four degrees. (If one of the source users has a private profile, this is instead three)');
             }
             var str = '<@'+userID+'>, there is '+match.length+' degrees of separation!'+(match.length?' Here are the users:\n':'');
             str += match.map(i => 'http://steamcommunity.com/profiles/'+i+'/').join('\n');
