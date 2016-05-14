@@ -66,6 +66,7 @@ var REDDIT_MATCH = /https?:\/\/www\.reddit\.com\/r\/([^/]+)\/comments\/([^/]+)\/
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
   var channel = mainServer.channels[channelID];
   if (!channel) channel = bot.directMessages[channelID];
+  if (!channel) return;
   var pm = !channel.name;
   if (!pm) console.log('['+userID+']', user, channel.name+':', message);
   else console.log('['+userID+']', user, 'PM:', message);
