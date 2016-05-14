@@ -7,7 +7,7 @@ const CleverBot = require('cleverbot.io');
 const chrono = require('chrono-node')
 const mathjs = require('mathjs');
 const sw = require('./steamweb')(config.get('steam.key'));
-const degrees = require('./degrees');
+//const degrees = require('./degrees');
 
 const bot = new DiscordClient({
     autorun: true,
@@ -213,7 +213,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
         }
       });
     }
-  } else if (message.match(/^!degree/)) {
+  }/* else if (message.match(/^!degree/)) {
     var match = message.match(/^!degrees? ([^ ]+) ([^ ]+)/);
     if (!match) {
       chat(channelID, 'Usage: !degrees <profile/id/vanity> <profile/id/vanity>')
@@ -293,7 +293,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 
     check(info1);
     check(info2);
-  }
+  }*/
 
   /*var date = chrono.parseDate(message);
   if (date) {
