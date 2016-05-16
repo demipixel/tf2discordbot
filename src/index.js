@@ -185,7 +185,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
       }
       if (info.type == 'id') checkID(info.id);
       else {
-        sw.id(info.id, (err, output) => {
+        sw.summary(info.id, (err, output) => {
           if (err) chat(channelID, '<@'+userID+'>, could not validate the URL at this time.');
           else if (output.message == 'No match') chat(channelID, '<@'+userID+'>, that is not a valid URL!');
           else if (output.steamid) checkID(output.steamid);
