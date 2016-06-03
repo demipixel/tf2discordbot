@@ -61,6 +61,8 @@ bot.on('ready', function() {
     mainServer = bot.servers[config.get('discord.server')];
 });
 
+bot.on('disconnect', bot.connect);
+
 var REDDIT_MATCH = /https?:\/\/www\.reddit\.com\/r\/([^/]+)\/comments\/([^/]+)\//;
 
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
