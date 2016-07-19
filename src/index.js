@@ -40,8 +40,8 @@ const chat = (id, message, noEmoji) => {
 };
 const idFromName = (name) => {
   name = name.replace(/[@<>]/g, '').toLowerCase();
-  return Object.keys(mainServer.members).reduce((chosen, id) => {
-    return (mainServer.members[id].user.username || '').toLowerCase() == name || id == name ? id : chosen;
+  return Object.keys(mainServer.users).reduce((chosen, id) => {
+    return (mainServer.users[id].username || '').toLowerCase() == name || id == name ? id : chosen;
   }, null);
 }
 const channelFromName = (name) => {
@@ -100,7 +100,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     var match = message.match(/!joined (.+)/);
     var id = idFromName(match[1]);
     if (id == null) chat(channelID, 'Couldn\'t find '+match[1].replace(/[@<>]/g, '')+'!');
-    else chat(channelID, '<@'+id+'> joined this discord '+moment(mainServer.members[id].joined_at).fromNow()+'.');
+    else chat(channelID, '<@'+id+'> joined this discord '+moment(mainServer.users[id].joined_at).fromNow()+'.');
   } else if (message == '!random') {
     sayRandomPost(channelID).catch(e=>{throw e;});
   } else if (!!~message.indexOf(bot.id)) {
